@@ -8,7 +8,7 @@ import { useLibrary } from "@/hooks/useLibrary";
 import { usePrefs } from "@/hooks/usePrefs";
 import { useFavorites } from "@/hooks/useFavorites";
 import { Skeleton } from "@/components/Skeleton";
-import { cn } from "@/lib/utils";
+import { cn, matchesCollectionRoute } from "@/lib/utils";
 import type { Language } from "@/types";
 
 export default function HymnPage({ params }: { params: Promise<{ id: string; number: string }> }) {
@@ -17,7 +17,7 @@ export default function HymnPage({ params }: { params: Promise<{ id: string; num
   const { collections, status } = useLibrary();
   const { prefs, update } = usePrefs();
   const { isFav, toggle } = useFavorites();
-  const col = collections.find((c) => c.id === id);
+  const col = collections.find((c) => matchesCollectionRoute(c, id));
   const idx = col ? col.songs.findIndex((s) => s.hymn_number === n) : -1;
   const song = col?.songs[idx];
   if (!col || !song) return status === "loading" ? <Skeleton /> : <p className="p-6 text-muted">Song not found.</p>;

@@ -18,6 +18,14 @@ export default function Home() {
   const { collections, status } = useLibrary();
   const [splash, setSplash] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filteredCollections = collections.filter((collection) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    const haystack = [collection.title, collection.description, collection.id, collection.url ?? ""].join(" ").toLowerCase();
+    return haystack.includes(q);
+  });
 
   useEffect(() => {
     if (!sessionStorage.getItem("tuimbe:splash")) { sessionStorage.setItem("tuimbe:splash", "1"); setSplash(true); }
@@ -107,33 +115,29 @@ export default function Home() {
             <h2 className="font-serif text-4xl font-bold tracking-tight text-fg">Sing. Worship. Together.</h2>
             <p className="mt-2 max-w-xl text-sm text-muted">A clean place for hymns, devotion, and shared worship moments.</p>
           </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <Link href="/admin" className="rounded-2xl border border-border bg-slate-50 p-3 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900">
-              <p className="text-xs uppercase tracking-[0.2em] text-accent">Admin</p>
-              <p className="mt-2 font-medium text-fg">Manage hymns</p>
-            </Link>
-            <Link href="/" className="rounded-2xl border border-border bg-slate-50 p-3 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900">
-              <p className="text-xs uppercase tracking-[0.2em] text-accent">Library</p>
-              <p className="mt-2 font-medium text-fg">Browse hymnals</p>
-            </Link>
-            <Link href="/favorites" className="rounded-2xl border border-border bg-slate-50 p-3 transition hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900">
-              <p className="text-xs uppercase tracking-[0.2em] text-accent">Favorites</p>
-              <p className="mt-2 font-medium text-fg">Saved songs</p>
-            </Link>
-          </div>
         </div>
       </header>
 
       <section className="mt-6">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <h3 className="text-lg font-semibold text-fg">Hymnals</h3>
-          <span className="text-sm text-muted">{collections.length} collection{collections.length === 1 ? "" : "s"}</span>
+          <span className="text-sm text-muted">{filteredCollections.length} collection{filteredCollections.length === 1 ? "" : "s"}</span>
         </div>
+
+        <label className="mb-4 block text-sm">
+          <span className="mb-2 block text-muted">Search hymnals</span>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-primary"
+            placeholder="Search by title or URL"
+          />
+        </label>
 
         {status === "loading" && <Skeleton />}
         {status === "error" && <p className="rounded-2xl border border-border bg-card p-6 text-center text-muted">Connect to the internet once to download your songs. After that, Tuimbe works offline.</p>}
-        <div className="space-y-4">{collections.map((c, i) => <CollectionCard key={c.id} c={c} i={i} />)}</div>
+        <div className="space-y-4">{filteredCollections.map((c, i) => <CollectionCard key={c.id} c={c} i={i} />)}</div>
+        {!filteredCollections.length && status !== "loading" && <p className="rounded-2xl border border-dashed border-border bg-card p-6 text-center text-muted">No hymnals match your search.</p>}
       </section>
     </>
   );

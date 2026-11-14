@@ -6,11 +6,12 @@ import { useLibrary } from "@/hooks/useLibrary";
 import { buildSearch } from "@/lib/search";
 import { SongRow } from "@/components/SongRow";
 import { Skeleton } from "@/components/Skeleton";
+import { matchesCollectionRoute } from "@/lib/utils";
 
 export default function CollectionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { collections, status } = useLibrary();
-  const col = collections.find((c) => c.id === id);
+  const col = collections.find((c) => matchesCollectionRoute(c, id));
   const [q, setQ] = useState("");
   const search = useMemo(() => buildSearch(col?.songs ?? []), [col]);
   if (!col) return status === "loading" ? <Skeleton /> : <p className="p-6 text-muted">Collection not found.</p>;
