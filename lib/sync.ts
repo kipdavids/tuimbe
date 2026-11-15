@@ -1,8 +1,29 @@
 import { repo } from "./repository";
 import type { Collection } from "@/types";
+import bundledCollection from "@/data/collections/kenyan-hymns.json";
 
-/** Downloads every collection listed in /data/index.json into IndexedDB. */
-export async function syncCollections(): Promise<Collection[]> {
+const bundledCollectionData = bundledCollection as any;
+const bundledCoverImage = "coverImage" in bundledCollectionData ? bundledCollectionData.coverImage : undefined;
+
+const bundledCollections: Collection[] = [
+  {
+    id: bundledCollection.id,
+    title: bundledCollection.title,
+    description: bundledCollection.description ?? "",
+    icon: bundledCollection.icon ?? "music",
+    coverImage: bundledCoverImage,
+    url: bundledCollection.url ?? `/library/${bundledCollection.id}`,
+    unit: bundledCollection.unit,
+    songs: bundledCollectionData.songs ?? bundledCollectionData.hymns ?? [],
+  },
+];
+
+const normalizeCollections = (raw: any[]): Collection[] => raw.map((c) => ({
+  id: c.id, title: c.title, description: c.description ?? "", icon: c.icon ?? "music",
+  coverImage: c.coverImage, url: c.url ?? `/library/${c.id}`, unit: c.unit, songs: c.songs ?? c.hymns ?? [],
+}));
+
+async function loadRemoteCollections(): Promise<Collection[]> {
   const idx: { id: string; file: string }[] = await (await fetch("/data/index.json", { cache: "no-cache" })).json();
   const raw: any[] = [];
 
@@ -17,13 +38,19 @@ export async function syncCollections(): Promise<Collection[]> {
     raw.push(...chunk);
   }
 
-  const cols: Collection[] = raw.map((c) => ({
-    id: c.id, title: c.title, description: c.description ?? "", icon: c.icon ?? "music",
-    coverImage: c.coverImage, url: c.url ?? `/library/${c.id}`, unit: c.unit, songs: c.songs ?? c.hymns ?? [],
-  }));
+  return normalizeCollections(raw);
+}
 
-  await repo.saveCollections(cols);
-  return cols;
+/** Downloads every collection listed in /data/index.json into IndexedDB. */
+export async function syncCollections(): Promise<Collection[]> {
+  try {
+    const cols = await loadRemoteCollections();
+    await repo.saveCollections(cols);
+    return cols;
+  } catch {
+    await repo.saveCollections(bundledCollections);
+    return bundledCollections;
+  }
 }
 
 /** Pre-fetches the minimal set of page shells needed for responsive offline browsing. */

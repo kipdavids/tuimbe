@@ -25,11 +25,6 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (!navigator.onLine) {
-        if (live && !local.length) setStatus("error");
-        return;
-      }
-
       try {
         const fresh = await syncCollections();
         if (live) {
@@ -40,7 +35,9 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
           void warmRoutes(fresh);
         }
       } catch {
-        if (live && !local.length) setStatus("error");
+        if (live && !local.length) {
+          setStatus("error");
+        }
       }
     })();
     return () => { live = false; };
