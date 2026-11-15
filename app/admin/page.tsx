@@ -40,7 +40,7 @@ export default function AdminPage() {
 
   const loadCollections = async () => {
     let next = await repo.getCollections();
-    if (!next.length) next = await syncCollections();
+    if (!next.length) next = await syncCollections(true);
 
     const hydrated = next.map((collection) => ({
       ...collection,

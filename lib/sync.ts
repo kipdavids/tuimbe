@@ -49,8 +49,13 @@ export async function ensureOfflineBootstrap(): Promise<Collection[]> {
   return bundledCollections;
 }
 
-/** Downloads every collection listed in /data/index.json into IndexedDB. */
-export async function syncCollections(): Promise<Collection[]> {
+/** Downloads every collection listed in /data/index.json into IndexedDB.
+ * If local edits already exist, keep them intact instead of overwriting the store.
+ */
+export async function syncCollections(force = false): Promise<Collection[]> {
+  const existing = await repo.getCollections();
+  if (!force && existing.length) return existing;
+
   try {
     const cols = await loadRemoteCollections();
     await repo.saveCollections(cols);
