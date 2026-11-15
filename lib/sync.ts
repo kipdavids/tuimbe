@@ -55,7 +55,17 @@ export async function syncCollections(): Promise<Collection[]> {
 
 /** Pre-fetches the minimal set of page shells needed for responsive offline browsing. */
 export async function warmRoutes(cols: Collection[]) {
-  const urls = ["/", "/favorites", ...new Set(cols.flatMap((c) => [`/library/${c.id}`, c.url ?? `/library/${c.id}`]))];
+  const urls = [
+    "/",
+    "/favorites",
+    "/admin",
+    "/hmnals",
+    "/library/hymns",
+    ...new Set(cols.flatMap((c) => {
+      const base = c.url ?? `/library/${c.id}`;
+      return [base, `/library/${c.id}`, `/hmnals`, "/library/hymns"]; 
+    })),
+  ];
 
   for (let i = 0; i < urls.length; i += 5) {
     await Promise.allSettled(

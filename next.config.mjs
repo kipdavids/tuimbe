@@ -11,7 +11,11 @@ const withPWA = withPWAInit({
   workboxOptions: {
     runtimeCaching: [
       { urlPattern: /\/data\/.*\.json$/, handler: "StaleWhileRevalidate", options: { cacheName: "tuimbe-data" } },
-      { urlPattern: /^(?:\/|\/(?:library|hymn|favorites|admin)(?:\/.*)?$)/, handler: "NetworkFirst", options: { cacheName: "tuimbe-shell" } },
+      {
+        urlPattern: ({ sameOrigin, url }) => sameOrigin && !url.pathname.startsWith("/_next") && !url.pathname.startsWith("/api") && !url.pathname.includes(".") && !url.pathname.startsWith("/icons"),
+        handler: "NetworkFirst",
+        options: { cacheName: "tuimbe-shell" },
+      },
     ],
   },
 });
