@@ -20,6 +20,7 @@ export default function Home() {
   const [splash, setSplash] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [search, setSearch] = useState("");
+  const [syncState, setSyncState] = useState<"idle" | "syncing" | "done">("idle");
 
   const filteredCollections = collections.filter((collection) => {
     const q = search.trim().toLowerCase();
@@ -70,6 +71,16 @@ export default function Home() {
     setInstallPrompt(null);
   };
 
+  const handleSync = async () => {
+    setSyncState("syncing");
+    try {
+      await syncPwa();
+    } finally {
+      setTimeout(() => setSyncState("done"), 500);
+      setTimeout(() => setSyncState("idle"), 2200);
+    }
+  };
+
   return (
     <>
       <AnimatePresence>{splash && <Splash onDone={() => setSplash(false)} />}</AnimatePresence>
@@ -110,7 +121,9 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button type="button" onClick={() => void syncPwa()} className="rounded-full border border-border bg-slate-100 px-3 py-1.5 text-sm font-medium text-fg transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Sync now</button>
+              <button type="button" onClick={handleSync} className="rounded-full border border-border bg-slate-100 px-3 py-1.5 text-sm font-medium text-fg transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+                {syncState === "syncing" ? "Syncing..." : syncState === "done" ? "Updated" : "Sync now"}
+              </button>
               <Link href="/admin" className="rounded-full border border-border bg-slate-100 px-3 py-1.5 text-sm font-medium text-fg transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Admin</Link>
             </div>
           </div>
@@ -121,6 +134,12 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {syncState !== "idle" && (
+        <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+          {syncState === "syncing" ? "Refreshing the app from the latest live version..." : "App refreshed successfully."}
+        </div>
+      )}
 
       <section className="mt-6">
         <div className="mb-4 flex items-center justify-between gap-3">
