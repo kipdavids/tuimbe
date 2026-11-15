@@ -6,6 +6,7 @@ import { BookOpen, Baby, Music, Mic2, type LucideIcon } from "lucide-react";
 import { repo } from "@/lib/repository";
 import { syncCollections } from "@/lib/sync";
 import { normalizeCollectionPath } from "@/lib/utils";
+import { syncPwa } from "@/components/Providers";
 import type { Collection } from "@/types";
 
 const ADMIN_KEY = "tuimbe:admin";
@@ -235,7 +236,10 @@ export default function AdminPage() {
               <p className="text-[10px] uppercase tracking-[0.26em] text-accent">Tuimbe</p>
               <h1 className="mt-1 font-serif text-2xl font-bold text-fg">Admin</h1>
             </div>
-            <button onClick={handleLogout} className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Logout</button>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => void syncPwa()} className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Sync now</button>
+              <button onClick={handleLogout} className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Logout</button>
+            </div>
           </div>
 
           <label className="mb-4 block text-sm">

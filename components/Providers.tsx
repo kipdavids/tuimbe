@@ -3,6 +3,27 @@ import { useEffect } from "react";
 import { PrefsProvider } from "@/hooks/usePrefs";
 import { LibraryProvider } from "@/hooks/useLibrary";
 
+export async function syncPwa() {
+  if (!("serviceWorker" in navigator)) {
+    window.location.reload();
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (registration) {
+      await registration.update();
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+    }
+  } catch {
+    // Ignore update errors and continue to a normal reload.
+  }
+
+  window.location.reload();
+}
+
 function PWAUpdateWatcher() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;

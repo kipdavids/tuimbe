@@ -8,6 +8,7 @@ import { CollectionCard } from "@/components/CollectionCard";
 import { Skeleton } from "@/components/Skeleton";
 import { Splash } from "@/components/Splash";
 import { Logo } from "@/components/Logo";
+import { syncPwa } from "@/components/Providers";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -108,7 +109,10 @@ export default function Home() {
                 <h1 className="font-serif text-2xl font-bold text-fg">{appConfig.appName}</h1>
               </div>
             </div>
-            <Link href="/admin" className="rounded-full border border-border bg-slate-100 px-3 py-1.5 text-sm font-medium text-fg transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Admin</Link>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => void syncPwa()} className="rounded-full border border-border bg-slate-100 px-3 py-1.5 text-sm font-medium text-fg transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Sync now</button>
+              <Link href="/admin" className="rounded-full border border-border bg-slate-100 px-3 py-1.5 text-sm font-medium text-fg transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Admin</Link>
+            </div>
           </div>
 
           <div className="mt-6">
