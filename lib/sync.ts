@@ -41,6 +41,14 @@ async function loadRemoteCollections(): Promise<Collection[]> {
   return normalizeCollections(raw);
 }
 
+export async function ensureOfflineBootstrap(): Promise<Collection[]> {
+  const saved = await repo.getCollections();
+  if (saved.length) return saved;
+
+  await repo.saveCollections(bundledCollections);
+  return bundledCollections;
+}
+
 /** Downloads every collection listed in /data/index.json into IndexedDB. */
 export async function syncCollections(): Promise<Collection[]> {
   try {
@@ -48,8 +56,7 @@ export async function syncCollections(): Promise<Collection[]> {
     await repo.saveCollections(cols);
     return cols;
   } catch {
-    await repo.saveCollections(bundledCollections);
-    return bundledCollections;
+    return ensureOfflineBootstrap();
   }
 }
 
