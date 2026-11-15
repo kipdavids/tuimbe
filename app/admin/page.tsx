@@ -228,8 +228,8 @@ export default function AdminPage() {
 
   return (
     <main className="mx-auto max-w-[1600px] py-6">
-      <div className="flex min-h-[calc(100vh-4rem)] overflow-hidden rounded-[2rem] border border-border bg-card/85 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-        <aside className="w-[25%] min-w-[300px] border-r border-border bg-slate-50/80 p-4 dark:bg-slate-950/70">
+      <div className="flex min-h-[calc(100vh-4rem)] flex-col overflow-hidden rounded-[2rem] border border-border bg-card/85 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-sm xl:flex-row">
+        <aside className="w-full border-b border-border bg-slate-50/80 p-4 dark:bg-slate-950/70 xl:w-[25%] xl:min-w-[300px] xl:border-b-0 xl:border-r">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] uppercase tracking-[0.26em] text-accent">Tuimbe</p>
@@ -319,10 +319,10 @@ export default function AdminPage() {
           )}
         </aside>
 
-        <section className="w-[75%] min-w-0 p-4 sm:p-6">
+        <section className="w-full min-w-0 p-4 sm:p-6 xl:w-[75%]">
           {selectedDraft ? (
             <>
-              <div className="mb-6 grid gap-3 md:grid-cols-3">
+              <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 <div className="rounded-[1.5rem] border border-border bg-gradient-to-br from-primary/10 to-transparent p-4">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-accent">Collections</p>
                   <div className="mt-3 flex items-end justify-between">
@@ -346,13 +346,13 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="mb-5 flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mb-5 flex flex-col gap-3 border-b border-border pb-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.26em] text-accent">Selected collection</p>
                   <h2 className="mt-1 font-serif text-3xl font-bold text-fg">{selectedDraft.title}</h2>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setActiveTab("details")}
